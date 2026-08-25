@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import Sidebar from '../components/sidebar/Sidebar';
+import Topbar from '../components/topbar/Topbar';
 
 const inter = Inter({
   variable: '--font-inter',
@@ -16,9 +17,12 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="en" className={`${inter.variable} h-full `}>
-      <body className="min-h-full flex flex-row">
+      <body className="min-h-full w-full flex">
         <Sidebar />
-        <main className="flex flex-col w-full">{children}</main>
+        <div className="flex flex-col w-full">
+          <Topbar />
+          <main className="flex mx-6 w-auto ">{children}</main>
+        </div>
       </body>
     </html>
   );

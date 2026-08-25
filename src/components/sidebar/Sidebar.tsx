@@ -5,7 +5,7 @@ export default function Sidebar() {
   return (
     <>
       <div className="min-w-60 min-h-full border-r border-white rounded-tl-0 rounded-tr-[20px] rounded-br-[20px] rounded-bl-0 backdrop-filter backdrop-blur-[10px] bg-white/10 flex flex-col items-start justify-between ">
-        <Link href={'/'}>
+        <Link href={'/log-book/main'}>
           <div className="min-w-60 h-17.5 border-b border-white/20 text-[24px] leading-6 font-light  text-white flex items-center justify-center cursor-pointer ">
             LOG BOOK
           </div>
