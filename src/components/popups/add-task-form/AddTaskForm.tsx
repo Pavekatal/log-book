@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import ToggleInput from '../../input/ToggleInput';
 import TextArea from '../../text-area/TextArea';
 import DateInput from '../../input/DateInput';
+import DatePicker from '../../date-picker/DatePicker';
 
 export default function AddTaskForm() {
   const [currentTypeTask, setCurrentTypeTask] = useState<boolean | null>(null);
@@ -115,7 +116,7 @@ export default function AddTaskForm() {
                 </div>
               </div>
             ) : (
-              <div className="mt-4 mb-4 p-4 border-t border-b border-white/20 text-[16px] leading-6 font-light text-[#67e6dc]">
+              <div className="mt-4 mb-4 p-4 border-t border-b border-white/20 text-[16px] leading-6 font-light ">
                 Текущая задача
                 <div className="mt-2 flex flex-col gap-3">
                   <TextArea
@@ -126,7 +127,8 @@ export default function AddTaskForm() {
                     className="input-current-task w-90 h-15 "
                     placeholder="Выполнение ..."
                   />
-                  <DateInput className="input-current-task" />
+                  {/* <DateInput className="input-current-task" /> */}
+                  <DatePicker />
                 </div>
               </div>
             )}
