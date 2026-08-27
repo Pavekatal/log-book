@@ -32,6 +32,10 @@ export default function AddTaskForm() {
     }
   };
 
+  const onAddedTask = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    console.log('Aded task');
+  };
+
   return (
     <div>
       <div
@@ -44,9 +48,6 @@ export default function AddTaskForm() {
       >
         <h6 className="text-center font-light ">Добавление задачи</h6>
         <div className="min-h-120">
-          <div className="mt-2">
-            <Input className="input-name-task" placeholder="Название задачи" />
-          </div>
           <div className="flex items-center justify-center gap-4 mt-4">
             <div className="flex flex-col items-center gap-1 cursor-pointer">
               <p className="font-light text-[14px] ">Ежедневная</p>
@@ -105,6 +106,12 @@ export default function AddTaskForm() {
               <div className="mt-4 mb-4 p-4 border-t border-b border-white/20 text-[16px] leading-6 font-light  text-[#CB85E1]">
                 Ежедневная задача
                 <div className="mt-2 flex flex-col gap-3">
+                  <div className="mt-2">
+                    <Input
+                      className="input-daily-task min-w-90 w-full h-9.5  "
+                      placeholder="Название задачи"
+                    />
+                  </div>
                   <TextArea
                     className="input-daily-task w-90 h-20 "
                     placeholder="Описание задачи"
@@ -116,18 +123,23 @@ export default function AddTaskForm() {
                 </div>
               </div>
             ) : (
-              <div className="mt-4 mb-4 p-4 border-t border-b border-white/20 text-[16px] leading-6 font-light ">
-                Текущая задача
-                <div className="mt-2 flex flex-col gap-3">
-                  <TextArea
-                    className="input-current-task w-90 h-20 "
-                    placeholder="Описание задачи"
-                  />
-                  <TextArea
-                    className="input-current-task w-90 h-15 "
-                    placeholder="Выполнение ..."
-                  />
-                  {/* <DateInput className="input-current-task" /> */}
+              <div className="mt-4 mb-4 p-4 border-t border-b border-white/20  ">
+                <div className="flex items-start gap-2">
+                  <div className="flex flex-col gap-2">
+                    <span className="text-sm font-light">Текущая задача</span>
+                    <Input
+                      className="input-current-task min-w-90 w-full h-9.5  "
+                      placeholder="Название задачи"
+                    />
+                    <TextArea
+                      className="input-current-task min-w-85 min-h-30 "
+                      placeholder="Описание задачи"
+                    />
+                    <TextArea
+                      className="input-current-task w-full h-15 "
+                      placeholder="Выполнение ..."
+                    />
+                  </div>
                   <DatePicker />
                 </div>
               </div>
@@ -135,7 +147,9 @@ export default function AddTaskForm() {
           </div>
         </div>
         <div className="flex items-end justify-center">
-          <Button className="btn-add">Save</Button>
+          <Button onClick={onAddedTask} className="btn-add w-22 h-7.75 ">
+            Добавить
+          </Button>
         </div>
       </div>
     </div>

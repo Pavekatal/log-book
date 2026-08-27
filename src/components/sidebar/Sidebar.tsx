@@ -14,33 +14,47 @@ export default function Sidebar() {
           <Link href={'/log-book/tasks'}>
             <div className="w-48 h-10.75 px-2 py-3 flex items-center gap-3 bg-glass-hover">
               <Image
-                width={21}
-                height={13}
+                width={24}
+                height={24}
                 src={'/img/tasks.svg'}
                 alt="tasks"
+                className="shrink-0 "
               />
               <p>Задачи на день</p>
             </div>
           </Link>
           <Link href={'/log-book/calls'}>
             <div className=" w-48 h-10.75 px-2 py-3 flex items-center gap-3 bg-glass-hover">
-              <Image width={20} height={26} src={'/img/logs.svg'} alt="calls" />
+              <Image
+                width={24}
+                height={24}
+                src={'/img/messages.svg'}
+                alt="calls"
+                className="shrink-0 "
+              />
               <p>Звонки и задачи</p>
             </div>
           </Link>
           <Link href={'/log-book/esroo'}>
             <div className=" w-48 h-10.75 px-2 py-3 flex items-center gap-3 bg-glass-hover">
-              <Image width={20} height={26} src={'/img/logs.svg'} alt="esroo" />
+              <Image
+                width={24}
+                height={24}
+                src={'/img/lamp-charge.svg'}
+                alt="esroo"
+                className="shrink-0 "
+              />
               <p>ЕСРОО</p>
             </div>
           </Link>
           <Link href={'/log-book/vitrina-egrn'}>
             <div className="w-48 h-10.75 px-2 py-3 flex items-center gap-3 bg-glass-hover">
               <Image
-                width={21}
-                height={21}
-                src={'/img/exports.svg'}
+                width={24}
+                height={24}
+                src={'/img/layer.svg'}
                 alt="vitrina egrn"
+                className="shrink-0 "
               />
               <p>Витрина ЕГРН</p>
             </div>
@@ -48,10 +62,11 @@ export default function Sidebar() {
           <Link href={'/log-book/gis-zhkh'}>
             <div className="w-48 h-10.75 px-2 py-3 flex items-center gap-3 bg-glass-hover">
               <Image
-                width={21}
-                height={21}
+                width={24}
+                height={24}
                 src={'/img/exports.svg'}
                 alt="gis zhkh"
+                className="shrink-0 "
               />
               <p>ГИС ЖКХ</p>
             </div>
@@ -59,10 +74,11 @@ export default function Sidebar() {
           <Link href={'/log-book/nsud'}>
             <div className="w-48 h-10.75 px-2 py-3 flex items-center gap-3 bg-glass-hover">
               <Image
-                width={21}
-                height={21}
-                src={'/img/exports.svg'}
+                width={24}
+                height={24}
+                src={'/img/copy-success.svg'}
                 alt="nsud"
+                className="shrink-0 "
               />
               <p>Сверка НСУД - ЕГРН</p>
             </div>
@@ -70,10 +86,11 @@ export default function Sidebar() {
           <Link href={'/log-book/reports'}>
             <div className="w-48 h-10.75 px-2 py-3 flex items-center gap-3 bg-glass-hover">
               <Image
-                width={20}
-                height={22}
+                width={24}
+                height={24}
                 src={'/img/reports.svg'}
                 alt="reports"
+                className="shrink-0 "
               />
               <p>Отчеты</p>
             </div>

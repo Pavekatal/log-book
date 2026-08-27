@@ -15,17 +15,15 @@ export default function DatePicker() {
 
   return (
     <div className="flex flex-col  gap-2 max-w-full">
-      <label htmlFor="date-input" className="text-sm font-light text-white ">
-        Срок исполнения
-      </label>
+      <span className="text-sm font-light text-white ">Срок исполнения</span>
 
       <Popover>
         <PopoverTrigger>
-          <Button
+          <div
             id="date-input"
-            variant={'outline'}
+            // variant={'outline'}
             className={cn(
-              'w-full justify-start items-center input-current-task  h-11 px-2 transition-all cursor-pointer',
+              'w-full flex items-center gap-2 input-current-task  h-11 px-2 transition-all cursor-pointer',
               ' focus:ring-2 focus:ring-primary/20 text-white/80',
               !date && 'text-foreground',
             )}
@@ -84,7 +82,7 @@ export default function DatePicker() {
             ) : (
               <span className="text-gray-400">дд.мм.гг</span>
             )}
-          </Button>
+          </div>
         </PopoverTrigger>
 
         {/* Выпадающее окно с календарем */}
