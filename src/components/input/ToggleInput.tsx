@@ -2,7 +2,10 @@ interface ToggleInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   className?: string;
 }
 
-export default function ToggleInput({ className = '', ...props }) {
+export default function ToggleInput({
+  className = '',
+  ...props
+}: ToggleInputProps) {
   return (
     <>
       <input

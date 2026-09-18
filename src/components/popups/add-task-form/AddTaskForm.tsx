@@ -2,19 +2,24 @@
 
 import Button from '../../added-btn/AddedBtn';
 import Input from '../../input/Input';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ToggleInput from '../../input/ToggleInput';
 import TextArea from '../../text-area/TextArea';
 import DateInput from '../../input/DateInput';
 import DatePicker from '../../date-picker/DatePicker';
+import { useAppDispatch, useAppSelector } from '@/src/store/store';
+import {
+  setIsDeadline,
+  setOpenAddFormTask,
+} from '@/src/store/features/taskSlice';
 
 export default function AddTaskForm() {
+  const dispatch = useAppDispatch();
+  const openAddFormTask = useAppSelector(
+    (state) => state.tasks.openAddFormTask,
+  );
+  const isDeadline = useAppSelector((state) => state.tasks.isDeadline);
   const [currentTypeTask, setCurrentTypeTask] = useState<boolean | null>(null);
-
-  // useEffect(() => {
-  //   setCurrentTypeTask('');
-  //   console.log('currentTypeTask: ', currentTypeTask);
-  // }, []);
 
   const onFormClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.stopPropagation();
@@ -32,8 +37,16 @@ export default function AddTaskForm() {
     }
   };
 
+  const onIsDeadline = (
+    e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>,
+  ) => {
+    dispatch(setIsDeadline(e.target.checked));
+    console.log('checked', 'isDeadline:', isDeadline);
+  };
+
   const onAddedTask = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     console.log('Aded task');
+    dispatch(setOpenAddFormTask(false));
   };
 
   return (
@@ -132,15 +145,22 @@ export default function AddTaskForm() {
                       placeholder="Название задачи"
                     />
                     <TextArea
-                      className="input-current-task min-w-85 min-h-30 "
-                      placeholder="Описание задачи"
-                    />
-                    <TextArea
-                      className="input-current-task w-full h-15 "
-                      placeholder="Выполнение ..."
+                      className="input-current-task min-w-85 min-h-75 "
+                      placeholder="Ход выполнения"
                     />
                   </div>
-                  <DatePicker />
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center justify-between ">
+                      <span className="text-sm font-light text-white ">
+                        Есть срок исполнения?
+                      </span>
+                      <ToggleInput
+                        checked={isDeadline}
+                        onChange={onIsDeadline}
+                      />
+                    </div>
+                    <DatePicker />
+                  </div>
                 </div>
               </div>
             )}

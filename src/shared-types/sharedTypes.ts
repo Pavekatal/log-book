@@ -4,7 +4,7 @@ export interface TaskType {
   createDate: string;
   editDate?: string;
   deleteDate?: string;
-  deadline?: string;
+  deadline: string | null;
   description?: string;
   status: string;
   checked?: boolean;
