@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import Sidebar from '../components/sidebar/Sidebar';
 import Topbar from '../components/topbar/Topbar';
+import ReduxProvider from '../store/ReduxProvider';
 
 const inter = Inter({
   variable: '--font-inter',
@@ -16,14 +17,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
-    <html lang="en" className={`${inter.variable} h-full `}>
-      <body className="min-h-full w-full flex">
-        <Sidebar />
-        <div className="flex flex-col w-full">
-          <Topbar />
-          <main className="flex mx-6 w-auto ">{children}</main>
-        </div>
-      </body>
-    </html>
+    <ReduxProvider>
+      <html lang="en" className={`${inter.variable} h-full `}>
+        <body className="min-h-full w-full flex">
+          <Sidebar />
+          <div className="flex flex-col w-full">
+            <Topbar />
+            <main className="flex mx-6 w-auto ">{children}</main>
+          </div>
+        </body>
+      </html>
+    </ReduxProvider>
   );
 }

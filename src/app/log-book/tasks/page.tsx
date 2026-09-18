@@ -2,19 +2,23 @@
 
 import Button from '@/src/components/added-btn/AddedBtn';
 import AddTaskForm from '@/src/components/popups/add-task-form/AddTaskForm';
-import { useState } from 'react';
+import { setOpenAddFormTask } from '@/src/store/features/taskSlice';
+import { useAppDispatch, useAppSelector } from '@/src/store/store';
 
 export default function TasksPage() {
-  const [openAddFormTask, setOpenAddFormTask] = useState<boolean>(true);
+  const dispatch = useAppDispatch();
+  const openAddFormTask = useAppSelector(
+    (state) => state.tasks.openAddFormTask,
+  );
 
   const onOpenAddFormTask = () => {
-    setOpenAddFormTask(!openAddFormTask);
+    dispatch(setOpenAddFormTask(!openAddFormTask));
     console.log('openAddFormTask: ', openAddFormTask);
   };
 
   const onOverlayClick = () => {
     if (openAddFormTask) {
-      setOpenAddFormTask(false);
+      dispatch(setOpenAddFormTask(false));
     }
   };
 
