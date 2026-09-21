@@ -116,8 +116,11 @@ export default function AddTaskForm() {
             {currentTypeTask === null ? (
               ''
             ) : currentTypeTask ? (
-              <div className="mt-4 mb-4 p-4 border-t border-b border-white/20 text-[16px] leading-6 font-light  text-[#CB85E1]">
-                Ежедневная задача
+              <div className="mt-4 mb-4 p-4 border-t border-b border-white/20 text-[16px] leading-6 font-light  ">
+                <div className="flex items-center justify-start gap-5">
+                  <span>Задача выполнена?</span>
+                  <ToggleInput />
+                </div>
                 <div className="mt-2 flex flex-col gap-3">
                   <div className="mt-2">
                     <Input
@@ -126,26 +129,24 @@ export default function AddTaskForm() {
                     />
                   </div>
                   <TextArea
-                    className="input-daily-task w-90 h-20 "
-                    placeholder="Описание задачи"
-                  />
-                  <TextArea
-                    className="input-daily-task w-90 h-15 "
-                    placeholder="Выполнение ..."
+                    className="input-daily-task w-90 min-h-30 "
+                    placeholder="Ход выполнения"
                   />
                 </div>
               </div>
             ) : (
               <div className="mt-4 mb-4 p-4 border-t border-b border-white/20  ">
-                <div className="flex items-start gap-2">
+                <div className="flex gap-2 ">
                   <div className="flex flex-col gap-2">
-                    <span className="text-sm font-light">Текущая задача</span>
+                    <span className="text-sm font-light opacity-0 ">
+                      Текущая задача
+                    </span>
                     <Input
-                      className="input-current-task min-w-90 w-full h-9.5  "
+                      className="input-current-task min-w-90 w-full h-11  "
                       placeholder="Название задачи"
                     />
                     <TextArea
-                      className="input-current-task min-w-85 min-h-75 "
+                      className="input-current-task min-w-85 h-73.25 "
                       placeholder="Ход выполнения"
                     />
                   </div>
