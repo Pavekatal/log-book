@@ -1,13 +1,21 @@
 export interface TaskType {
   _id: string;
-  name: string;
+  title: string;
   createDate: string;
-  editDate?: string;
-  deleteDate?: string;
+  updateDate?: string;
   deadline: string | null;
-  description?: string;
-  status: string;
+  progress?: string;
   checked?: boolean;
-  notes?: string;
   typeTask: string;
 }
+
+export type TaskInput = {
+  _id?: string;
+  title: string;
+  createDate?: string;
+  updateDate?: string;
+  deadline?: string | null;
+  progress?: string;
+  checked?: boolean;
+  typeTask: string;
+};
