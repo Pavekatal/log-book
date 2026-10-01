@@ -1,15 +1,19 @@
 'use client';
 
 import Button from '@/src/components/added-btn/AddedBtn';
+import DayCard from '@/src/components/day-card/DayCard';
 import AddTaskForm from '@/src/components/popups/add-task-form/AddTaskForm';
+import TaskCard from '@/src/components/task-card/TaskCard';
 import { setOpenAddFormTask } from '@/src/store/features/taskSlice';
 import { useAppDispatch, useAppSelector } from '@/src/store/store';
+import { useEffect, useState } from 'react';
 
 export default function TasksPage() {
   const dispatch = useAppDispatch();
   const openAddFormTask = useAppSelector(
     (state) => state.tasks.openAddFormTask,
   );
+  const [selectDate, setSelectDate] = useState<boolean>(false);
 
   const onOpenAddFormTask = () => {
     dispatch(setOpenAddFormTask(!openAddFormTask));
@@ -22,29 +26,30 @@ export default function TasksPage() {
     }
   };
 
+  const onSelectDate = () => {
+    setSelectDate((prev) => !prev);
+  };
+
+  useEffect(() => {
+    console.log(selectDate);
+  }, [selectDate]);
+
   return (
-    <div className="flex flex-col items-center gap-6 text-center ">
-      <div className="flex items-center justify-center gap-4">
+    <div className="flex flex-col items-center gap-4 text-center w-full">
+      <div className="flex items-center justify-center gap-4 ">
         <Button className="btn-add" onClick={onOpenAddFormTask}>
-          Add Task
+          Добавить задачу
         </Button>
       </div>
-      <div className="flex flex-col gap-5 ">
-        <div className="w-190.25 h-67.5 px-5.25 py-8.75 border border-white rounded-[20px] backdrop-filter backdrop-blur-[10px] bg-white/10  ">
-          <h3>Ежедневные задачи</h3>
-        </div>
-        <div className="w-190.25 h-67.5 px-5.25 py-8.75 border border-white rounded-[20px] backdrop-filter backdrop-blur-[10px] bg-white/10 ">
-          <h3>Дополнительные задачи</h3>
-        </div>
-      </div>
-      <div>
-        <div>
-          <h6>Статистика по УЗ и запросам в ТП</h6>
-        </div>
-        <div>
-          <h6>Создание задачи</h6>
+      <div className="flex flex-col gap-5 w-full ">
+        <div className=" h-auto px-5.25 py-5 border-[0.5px] border-white/50 rounded-[20px] backdrop-filter backdrop-blur-[5px] bg-white/10 flex flex-col gap-4 ">
+          <span className="text-[24px] font-light flex">24.09.2026</span>
+          <div className="flex gap 3">
+            <TaskCard />
+          </div>
         </div>
       </div>
+
       <div onClick={onOverlayClick}>{openAddFormTask && <AddTaskForm />}</div>
     </div>
   );
