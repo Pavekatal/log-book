@@ -19,3 +19,7 @@ export type TaskInput = {
   checked?: boolean;
   typeTask: string;
 };
+
+export type GroupeTasks = {
+  [date: string]: TaskType[];
+};
