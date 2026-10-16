@@ -5,21 +5,35 @@ import Input from '../../input/Input';
 import React, { useEffect, useState } from 'react';
 import ToggleInput from '../../input/ToggleInput';
 import TextArea from '../../text-area/TextArea';
-import DateInput from '../../input/DateInput';
 import DatePicker from '../../date-picker/DatePicker';
 import { useAppDispatch, useAppSelector } from '@/src/store/store';
 import {
+  setErrorMessage,
   setIsDeadline,
   setOpenAddFormTask,
+  setTasks,
 } from '@/src/store/features/taskSlice';
+import { TaskForPost, TaskType } from '@/src/shared-types/sharedTypes';
+import { getTasks, postTask } from '@/src/services/tasks/tasksAPI';
 
 export default function AddTaskForm() {
   const dispatch = useAppDispatch();
-  const openAddFormTask = useAppSelector(
-    (state) => state.tasks.openAddFormTask,
-  );
-  const isDeadline = useAppSelector((state) => state.tasks.isDeadline);
+  const { isDeadline, errorMessage } = useAppSelector((state) => state.tasks);
+  const [error, setError] = useState<boolean>(false);
   const [currentTypeTask, setCurrentTypeTask] = useState<boolean | null>(null);
+  const [dataField, setDataField] = useState<TaskForPost>({
+    createDate: '',
+    title: '',
+    deadline: null,
+    progress: '',
+    checked: false,
+    typeTask: '',
+  });
+
+  useEffect(() => {
+    dispatch(setErrorMessage(''));
+    setError(false);
+  }, []);
 
   const onFormClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.stopPropagation();
@@ -30,23 +44,90 @@ export default function AddTaskForm() {
   ) => {
     let id = e.currentTarget.id;
 
-    if (id === 'daily-task') {
+    if (id === 'daily') {
       setCurrentTypeTask(true);
     } else {
       setCurrentTypeTask(false);
     }
+
+    setDataField((prev) => ({ ...prev, typeTask: id }));
   };
 
   const onIsDeadline = (
     e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>,
   ) => {
-    dispatch(setIsDeadline(e.target.checked));
+    const checkedDeadline = e.target.checked;
+    dispatch(setIsDeadline(checkedDeadline));
     console.log('checked', 'isDeadline:', isDeadline);
+
+    if (!checkedDeadline) {
+      setDataField((prev) => ({ ...prev, deadline: null }));
+    }
   };
 
-  const onAddedTask = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    console.log('Aded task');
-    dispatch(setOpenAddFormTask(false));
+  const onChangeTitleTask = (
+    e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>,
+  ) => {
+    const titleTask = e.target.value;
+    dispatch(setErrorMessage(''));
+    setError(false);
+
+    setDataField((prev) => ({
+      ...prev,
+      title: titleTask,
+    }));
+  };
+
+  const onChangeProgressTask = (
+    e: React.ChangeEvent<HTMLTextAreaElement, HTMLTextAreaElement>,
+  ) => {
+    setDataField((prev) => ({
+      ...prev,
+      progress: e.target.value,
+    }));
+  };
+
+  const onSelectDeadlineTask = (date: Date | undefined) => {
+    setDataField((prev) => ({
+      ...prev,
+      deadline: date ? date.toISOString() : null,
+    }));
+    console.log('dataField:', dataField);
+  };
+
+  const onAddedTask = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
+    e.preventDefault();
+
+    if (!dataField.title.trim().length || !dataField.typeTask) {
+      dispatch(setErrorMessage('Заполните поле'));
+      setError(true);
+      dispatch(setOpenAddFormTask(true));
+      return;
+    }
+
+    const dataToSend = {
+      ...dataField,
+      createDate: new Date().toISOString(),
+    };
+    console.log('dataToSend: ', dataToSend);
+
+    try {
+      if (dataToSend) {
+        await postTask(dataToSend);
+        const updateTasks = await getTasks();
+        dispatch(setTasks(updateTasks));
+        dispatch(setOpenAddFormTask(false));
+        console.log('dataField: ', dataToSend);
+      }
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.log(err.message);
+      } else {
+        console.log('Произошла ошибка отпраки данных: ', err);
+      }
+    }
   };
 
   return (
@@ -65,7 +146,7 @@ export default function AddTaskForm() {
             <div className="flex flex-col items-center gap-1 cursor-pointer">
               <p className="font-light text-[14px] ">Ежедневная</p>
               <div
-                id="daily-task"
+                id="daily"
                 onClick={onChooseTypeTask}
                 className={`w-10 h-10 rounded-lg type-task  flex items-center justify-center shadow-[0px_4px_67px_-5px_rgba(0,0,0,1)] ${currentTypeTask === null ? 'daily-task' : !currentTypeTask && currentTypeTask !== null ? '' : 'choose-daily-task'}`}
               >
@@ -94,9 +175,9 @@ export default function AddTaskForm() {
             <div className="flex flex-col items-center gap-1 cursor-pointer ">
               <p className="font-light text-[14px] ">Текущая</p>
               <div
-                id="current-task"
+                id="current"
                 onClick={onChooseTypeTask}
-                className={`w-10 h-10 rounded-lg type-task  flex items-center justify-center shadow-[0px_4px_67px_-5px_rgba(0,0,0,1)] ${!currentTypeTask && currentTypeTask !== null ? 'choose-current-task' : currentTypeTask ? '' : 'current-task'}`}
+                className={`w-10 h-10 rounded-lg type-task  flex items-center justify-center shadow-[0px_4px_67px_-5px_rgba(0,0,0,1)] ${!currentTypeTask && currentTypeTask !== null ? 'choose-current-task' : currentTypeTask ? '' : 'current'}`}
               >
                 <svg
                   className={`${!currentTypeTask && currentTypeTask !== null ? 'choose-current-lock' : 'current-task-icon'}`}
@@ -115,41 +196,31 @@ export default function AddTaskForm() {
           <div>
             {currentTypeTask === null ? (
               ''
-            ) : currentTypeTask ? (
-              <div className="mt-4 mb-4 p-4 border-t border-b border-white/20 text-[16px] leading-6 font-light  ">
-                <div className="flex items-center justify-start gap-5">
-                  <span>Задача выполнена?</span>
-                  <ToggleInput />
-                </div>
-                <div className="mt-2 flex flex-col gap-3">
+            ) : (
+              <div className="mt-4 mb-4 p-4 border-t border-b border-white/20 text-[16px] leading-6 font-light flex gap-4 ">
+                <div className="flex flex-col gap-3 mt-6">
                   <div className="mt-2">
                     <Input
-                      className="input-daily-task min-w-90 w-full h-9.5  "
+                      value={dataField.title}
+                      error={error}
+                      className={` min-w-90 w-full h-10 rounded-[8px] bg-[rgba(255, 255, 255, 0.1);] text-[16px] text-left  `}
                       placeholder="Название задачи"
+                      onChange={onChangeTitleTask}
                     />
+                    {error && (
+                      <p className="font-light text-[14px] text-[#ff5257] mt-1">
+                        {errorMessage}
+                      </p>
+                    )}
                   </div>
                   <TextArea
-                    className="input-daily-task w-90 min-h-30 "
+                    value={dataField.progress}
+                    className="input-daily-task w-90 min-h-72 rounded-[8px]"
                     placeholder="Ход выполнения"
+                    onChange={onChangeProgressTask}
                   />
                 </div>
-              </div>
-            ) : (
-              <div className="mt-4 mb-4 p-4 border-t border-b border-white/20  ">
-                <div className="flex gap-2 ">
-                  <div className="flex flex-col gap-2">
-                    <span className="text-sm font-light opacity-0 ">
-                      Текущая задача
-                    </span>
-                    <Input
-                      className="input-current-task min-w-90 w-full h-11  "
-                      placeholder="Название задачи"
-                    />
-                    <TextArea
-                      className="input-current-task min-w-85 h-73.25 "
-                      placeholder="Ход выполнения"
-                    />
-                  </div>
+                {!currentTypeTask && (
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center justify-between ">
                       <span className="text-sm font-light text-white ">
@@ -160,9 +231,9 @@ export default function AddTaskForm() {
                         onChange={onIsDeadline}
                       />
                     </div>
-                    <DatePicker />
+                    <DatePicker selectDate={onSelectDeadlineTask} />
                   </div>
-                </div>
+                )}
               </div>
             )}
           </div>

@@ -19,3 +19,13 @@ export type TaskInput = {
   checked?: boolean;
   typeTask: string;
 };
+
+export type TaskForPost = Omit<TaskType, '_id'>;
+
+export type GroupeTasks = {
+  [date: string]: TaskType[];
+};
+
+export type ResponseAddTask = {
+  id: string;
+};

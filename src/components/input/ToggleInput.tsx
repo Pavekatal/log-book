@@ -4,6 +4,7 @@ interface ToggleInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 export default function ToggleInput({
   className = '',
+  checked,
   ...props
 }: ToggleInputProps) {
   return (
@@ -13,6 +14,7 @@ export default function ToggleInput({
         role="switch"
         name="checkbox"
         className="toggle"
+        checked={checked}
         {...props}
       />
     </>
