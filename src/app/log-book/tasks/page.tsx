@@ -1,16 +1,19 @@
 'use client';
 
 import Button from '@/src/components/added-btn/AddedBtn';
+import FetchingTasks from '@/src/components/fetchs/fetching-tasks/FetchingTasks';
 import AddTaskForm from '@/src/components/popups/add-task-form/AddTaskForm';
 import ScrollContainer from '@/src/components/scroll-container/ScrollContainer';
 import TaskCard from '@/src/components/task-card/TaskCard';
 import { GroupeTasks, TaskType } from '@/src/shared-types/sharedTypes';
 import {
   setOpenAddFormTask,
+  setTasks,
   updateCheckedTask,
 } from '@/src/store/features/taskSlice';
 import { useAppDispatch, useAppSelector } from '@/src/store/store';
 import { groupTasksByDate } from '@/src/utils/groupingByCreationDate';
+import { useEffect } from 'react';
 
 export default function TasksPage() {
   const dispatch = useAppDispatch();
@@ -41,31 +44,27 @@ export default function TasksPage() {
         </Button>
       </div>
       <ScrollContainer className="w-full max-h-[80vh] ">
-        {Object.entries(groups).map(([date, tasksInDay]) => (
-          <div
-            key={date}
-            className=" h-auto px-5.25 py-5 border-[0.5px] border-white/50 rounded-[20px] backdrop-filter backdrop-blur-[5px] bg-white/10 flex flex-col gap-4 "
-          >
-            <span className="text-[24px] font-light flex">
-              {date.split('-').reverse().join('.')}
-            </span>
-            <div className="flex gap-3.5 flex-wrap ">
-              {tasksInDay.map((task) => (
-                <TaskCard
-                  key={task._id}
-                  task={task}
-                  onCheckedTask={onCheckedTask}
-                />
-              ))}
+        {Object.entries(groups)
+          .reverse()
+          .map(([date, tasksInDay]) => (
+            <div
+              key={date}
+              className=" h-auto px-5.25 py-5 border-[0.5px] border-white/50 rounded-[20px] backdrop-filter backdrop-blur-[5px] bg-white/10 flex flex-col gap-4 "
+            >
+              <span className="text-[24px] font-light flex">
+                {date.split('-').reverse().join('.')}
+              </span>
+              <div className="flex gap-3.5 flex-wrap ">
+                {tasksInDay.map((task) => (
+                  <TaskCard
+                    key={task._id}
+                    task={task}
+                    onCheckedTask={onCheckedTask}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
-        {/* <div className="absolute top-0 right-0 bottom-0 w-2 rounded-full bg-white/5 backdrop-blur-sm pointer-events-none">
-          <div
-            id="scroll-thumb"
-            className="w-full rounded-full bg-white/30  backdrop-blur-md shadow-sm transition-all duration-75"
-          ></div>
-        </div> */}
+          ))}
       </ScrollContainer>
       <div onClick={onOverlayClick}>{openAddFormTask && <AddTaskForm />}</div>
     </div>

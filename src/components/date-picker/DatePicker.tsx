@@ -11,9 +11,18 @@ import { ru } from 'date-fns/locale';
 import { Calendar } from '../ui/calendar';
 import { useAppSelector } from '@/src/store/store';
 
-export default function DatePicker() {
+interface DeadlineTaskType {
+  selectDate: (date: Date | undefined) => void;
+}
+
+export default function DatePicker({ selectDate }: DeadlineTaskType) {
   const [date, setDate] = React.useState<Date>();
   const isDeadline = useAppSelector((state) => state.tasks.isDeadline);
+
+  const onSelectDate = (selectedDate: Date | undefined) => {
+    setDate(selectedDate);
+    selectDate(selectedDate);
+  };
 
   return (
     <div className="flex flex-col  gap-2 max-w-full">
@@ -89,7 +98,7 @@ export default function DatePicker() {
         <Calendar
           mode="single"
           selected={date}
-          onSelect={setDate}
+          onSelect={onSelectDate}
           //   initialFocus
           locale={ru}
         />

@@ -80,7 +80,9 @@ export default function TaskCard({ task, onCheckedTask }: TaskProp) {
           {task.deadline === null ? null : (
             <div className="flex gap-2">
               <p className="font-light text-sm">до: </p>
-              <p className="font-bold text-sm">{task.deadline}</p>
+              <p className="font-bold text-sm">
+                {formattedDate(task.deadline)}
+              </p>
             </div>
           )}
         </div>

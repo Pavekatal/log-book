@@ -86,7 +86,8 @@ export default function ScrollContainer({
     document.addEventListener('mouseup', thumbMouseUp);
   };
 
-  const thumbMouseMove = (e: MouseEvent) => {
+  // Перетаскивание бегунка мышью
+  const thumbMouseMove = (e: globalThis.MouseEvent) => {
     const content = contentRef.current;
     const thumb = thumbRef.current;
     if (!dragRef.current.isDragging || !content || !thumb) return;
@@ -106,6 +107,7 @@ export default function ScrollContainer({
     content.scrollTop = dragRef.current.startScrollTop + scrollDelta;
   };
 
+  // Отпускание мыши
   const thumbMouseUp = () => {
     dragRef.current.isDragging = false;
     document.body.style.cursor = '';
