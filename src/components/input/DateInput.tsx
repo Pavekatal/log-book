@@ -12,7 +12,7 @@ export default function DateInput({ className = '', error = false, ...props }) {
       <input
         type="date"
         className={`${className} w-90 h-9.5 placeholder-gray-400 
-           p-2 placeholder-font-normal placeholder-text-[14px] outline-none `}
+           p-2 placeholder-font-extralight placeholder-text-[14px] border `}
         {...props}
       />
     </>

@@ -1,16 +1,106 @@
+'use client';
+
 import { cn } from '@/lib/utils';
-import KebabMenu from '../kebab/KebabMenu';
 import ToggleInputSquare from '../input/ToggleInputSquare';
-import { TaskType } from '@/src/shared-types/sharedTypes';
+import { TaskForPatch, TaskType } from '@/src/shared-types/sharedTypes';
 import { formattedDate } from '@/src/utils/formattedDate';
+import Billet from '../billet/Billet';
+import React, { useState } from 'react';
+import Input from '../input/Input';
+import { useAppDispatch } from '@/src/store/store';
+import {
+  setIsDeadline,
+  setTasks,
+  updateCheckedTask,
+} from '@/src/store/features/taskSlice';
+import DatePickerSmall from '../date-picker/DatePickerSmall';
+import { getTasks, patchTask } from '@/src/services/tasks/tasksAPI';
 
 interface TaskProp {
   task: TaskType;
-  onCheckedTask: (id: string, checked: boolean) => void;
 }
 
-export default function TaskCard({ task, onCheckedTask }: TaskProp) {
+export default function TaskCard({ task }: TaskProp) {
+  const dispatch = useAppDispatch();
+  const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [dataField, setDataField] = useState<TaskForPatch>({});
   let typeTask: string = task.typeTask;
+
+  const onIsEditTask = () => {
+    setIsEdit(!isEdit);
+    dispatch(setIsDeadline(true));
+    console.log(task._id);
+  };
+
+  const onCheckedTask = (id: string, isChecked: boolean) => {
+    dispatch(updateCheckedTask({ id, checked: isChecked }));
+    setDataField((prev) => ({
+      ...prev,
+      checked: isChecked,
+    }));
+    console.log('isChecked: ', isChecked);
+    console.log('id: ', id);
+  };
+
+  const onChangeProgressTask = (
+    e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>,
+  ) => {
+    const updateProgressTask = e.target.value;
+    setDataField((prev) => ({ ...prev, progress: updateProgressTask }));
+  };
+
+  const onChangeDate = (date: Date | undefined) => {
+    if (date) {
+      let ISODate = date.toISOString();
+      setDataField((prev) => ({ ...prev, deadline: ISODate }));
+      console.log('ISODate: ', ISODate);
+    }
+  };
+
+  const updateTask = async () => {
+    const patchPartialTask: Partial<TaskForPatch> = {};
+
+    if (dataField.deadline !== undefined)
+      patchPartialTask.deadline = dataField.deadline;
+
+    if (dataField.progress !== undefined)
+      patchPartialTask.progress = dataField.progress;
+
+    if (dataField.checked !== undefined)
+      patchPartialTask.checked = dataField.checked;
+
+    if (Object.keys(patchPartialTask).length === 0) {
+      console.log('Нет изменений для сохранения');
+      setIsEdit(false);
+      return;
+    }
+
+    try {
+      await patchTask(task._id, patchPartialTask);
+      const updatedTask = await getTasks();
+      dispatch(setTasks(updatedTask));
+      console.log('DataField: ', dataField);
+      console.log('Задача сохранена успешно');
+      setIsEdit(false);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.log(err.message);
+      } else {
+        console.log('Произошла ошибка отправки данных', err);
+      }
+    }
+  };
+
+  const onCancelSave = () => {
+    setIsEdit(false);
+    console.log('Редактирование задачи отменено');
+    return;
+  };
+
+  const onDeleteTask = () => {
+    console.log('deleted task');
+    console.log('Задача удалена успешно');
+  };
 
   return (
     <div className="w-98.25 h-auto border-[0.82px] border-white/10 rounded-[8px] backdrop-blur-[5px] bg-white/10 p-3.75 hover:scale-102 transition-transform duration-300 hover:shadow-md hover:shadow-black/10 ">
@@ -69,22 +159,51 @@ export default function TaskCard({ task, onCheckedTask }: TaskProp) {
               {formattedDate(task.createDate)}
             </p>
           </div>
-          <KebabMenu />
+          <div className="flex gap-2">
+            {!isEdit ? (
+              <Billet onClick={onIsEditTask} actionType="edit" />
+            ) : (
+              <div className="flex gap-2">
+                <Billet onClick={updateTask} actionType="save" />
+                <Billet onClick={onCancelSave} actionType={'cancel'} />
+              </div>
+            )}
+            <Billet onClick={onDeleteTask} actionType={'delete'} />
+          </div>
         </div>
 
         <div className="flex flex-col items-start gap-2">
           <h6>{task.title}</h6>
-          {!task.progress ? null : (
-            <p className="font-light text-sm">{task.progress}</p>
+
+          {!task.progress && task.progress !== '' ? null : (
+            <div>
+              {!isEdit ? (
+                <p className="font-light text-sm">{task.progress}</p>
+              ) : (
+                <Input
+                  value={dataField.progress ?? ''}
+                  placeholder={task.progress ? task.progress : 'ход исполнения'}
+                  className=" h-6 rounded-[6px] font-extralight text-[14px]"
+                  onChange={onChangeProgressTask}
+                />
+              )}
+            </div>
           )}
-          {task.deadline === null ? null : (
+          {isEdit ? (
+            <DatePickerSmall
+              selectDate={onChangeDate}
+              placeholder={
+                task.deadline ? formattedDate(task.deadline) : 'дд.мм.гг'
+              }
+            />
+          ) : task.deadline !== null ? (
             <div className="flex gap-2">
               <p className="font-light text-sm">до: </p>
               <p className="font-bold text-sm">
                 {formattedDate(task.deadline)}
               </p>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </div>

@@ -22,10 +22,16 @@ export type TaskInput = {
 
 export type TaskForPost = Omit<TaskType, '_id'>;
 
+export interface TaskForPatch {
+  deadline?: string | null;
+  progress?: string;
+  checked?: boolean;
+}
+
 export type GroupeTasks = {
   [date: string]: TaskType[];
 };
 
-export type ResponseAddTask = {
+export type ResponseTask = {
   id: string;
 };

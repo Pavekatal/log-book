@@ -1,5 +1,6 @@
 import {
-  ResponseAddTask,
+  ResponseTask,
+  TaskForPatch,
   TaskForPost,
   TaskType,
 } from '@/src/shared-types/sharedTypes';
@@ -13,15 +14,31 @@ export const getTasks = async (): Promise<TaskType[]> => {
   });
 };
 
-export const postTask = async (data: TaskForPost): Promise<ResponseAddTask> => {
+export const postTask = async (data: TaskForPost): Promise<ResponseTask> => {
   return axios
-    .post<ResponseAddTask>(API_URL + '/api/tasks', data)
-    .then((res: AxiosResponse<ResponseAddTask>) => {
+    .post<ResponseTask>(API_URL + '/api/tasks', data)
+    .then((res: AxiosResponse<ResponseTask>) => {
       console.log(res.data);
       return res.data;
     })
     .catch((error) => {
       console.error(error);
+      throw error;
+    });
+};
+
+export const patchTask = async (
+  id: string,
+  data: TaskForPatch,
+): Promise<ResponseTask> => {
+  return axios
+    .patch(API_URL + `/api/tasks/${id}`, data)
+    .then((res: AxiosResponse<ResponseTask>) => {
+      console.log(res.data);
+      return res.data;
+    })
+    .catch((error) => {
+      console.log(error);
       throw error;
     });
 };

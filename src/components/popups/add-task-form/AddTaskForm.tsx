@@ -125,7 +125,7 @@ export default function AddTaskForm() {
       if (err instanceof Error) {
         console.log(err.message);
       } else {
-        console.log('Произошла ошибка отпраки данных: ', err);
+        console.log('Произошла ошибка отправки данных: ', err);
       }
     }
   };

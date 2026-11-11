@@ -13,7 +13,7 @@ export default function Input({
       <input
         type="text"
         className={`placeholder-gray-400 
-           p-2 placeholder-font-normal placeholder-text-[14px] ${className} outline-none ${error ? 'error' : 'input-daily-task'} `}
+           p-2 placeholder-font-normal placeholder-text-[12px] font-light ${className} outline-none ${error ? 'error' : 'input-daily-task'} `}
         {...props}
       />
     </>

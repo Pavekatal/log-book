@@ -1,19 +1,14 @@
 'use client';
 
 import Button from '@/src/components/added-btn/AddedBtn';
-import FetchingTasks from '@/src/components/fetchs/fetching-tasks/FetchingTasks';
+
 import AddTaskForm from '@/src/components/popups/add-task-form/AddTaskForm';
 import ScrollContainer from '@/src/components/scroll-container/ScrollContainer';
 import TaskCard from '@/src/components/task-card/TaskCard';
 import { GroupeTasks, TaskType } from '@/src/shared-types/sharedTypes';
-import {
-  setOpenAddFormTask,
-  setTasks,
-  updateCheckedTask,
-} from '@/src/store/features/taskSlice';
+import { setOpenAddFormTask } from '@/src/store/features/taskSlice';
 import { useAppDispatch, useAppSelector } from '@/src/store/store';
 import { groupTasksByDate } from '@/src/utils/groupingByCreationDate';
-import { useEffect } from 'react';
 
 export default function TasksPage() {
   const dispatch = useAppDispatch();
@@ -30,10 +25,6 @@ export default function TasksPage() {
     if (openAddFormTask) {
       dispatch(setOpenAddFormTask(false));
     }
-  };
-
-  const onCheckedTask = (id: string, isChecked: boolean) => {
-    dispatch(updateCheckedTask({ id, checked: isChecked }));
   };
 
   return (
@@ -56,11 +47,7 @@ export default function TasksPage() {
               </span>
               <div className="flex gap-3.5 flex-wrap ">
                 {tasksInDay.map((task) => (
-                  <TaskCard
-                    key={task._id}
-                    task={task}
-                    onCheckedTask={onCheckedTask}
-                  />
+                  <TaskCard key={task._id} task={task} />
                 ))}
               </div>
             </div>
