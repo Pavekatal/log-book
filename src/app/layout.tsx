@@ -4,6 +4,7 @@ import './globals.css';
 import Sidebar from '../components/sidebar/Sidebar';
 import Topbar from '../components/topbar/Topbar';
 import ReduxProvider from '../store/ReduxProvider';
+import FetchingTasks from '../components/fetchs/fetching-tasks/FetchingTasks';
 
 const inter = Inter({
   variable: '--font-inter',
@@ -23,6 +24,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
           <Sidebar />
           <div className="flex flex-col w-full">
             <Topbar />
+            <FetchingTasks />
             <main className="flex mx-6 w-auto ">{children}</main>
           </div>
         </body>

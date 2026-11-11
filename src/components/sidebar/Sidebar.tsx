@@ -32,7 +32,7 @@ export default function Sidebar() {
                 alt="calls"
                 className="shrink-0 "
               />
-              <p>Звонки и задачи</p>
+              <p>Консультирование</p>
             </div>
           </Link>
           <Link href={'/log-book/esroo'}>
