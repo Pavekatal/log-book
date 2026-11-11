@@ -42,3 +42,16 @@ export const patchTask = async (
       throw error;
     });
 };
+
+export const deleteTask = async (id: string): Promise<ResponseTask> => {
+  return axios
+    .delete(API_URL + `/api/tasks/${id}`)
+    .then((res) => {
+      console.log(res.data);
+      return res.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      throw error;
+    });
+};

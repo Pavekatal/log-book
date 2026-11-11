@@ -5,6 +5,8 @@ type initialStateType = {
   openAddFormTask: boolean;
   isDeadline: boolean;
   tasks: TaskType[];
+  message: string;
+  isShowMessage: boolean;
   errorMessage: string;
 };
 
@@ -12,6 +14,8 @@ const initialState: initialStateType = {
   openAddFormTask: false,
   isDeadline: false,
   tasks: [],
+  message: '',
+  isShowMessage: false,
   errorMessage: '',
 };
 
@@ -41,6 +45,12 @@ const taskSlice = createSlice({
           : t,
       );
     },
+    setMessage: (state, action: PayloadAction<string>) => {
+      state.message = action.payload;
+    },
+    setIsShowMessage: (state, action: PayloadAction<boolean>) => {
+      state.isShowMessage = action.payload;
+    },
     setErrorMessage: (state, action: PayloadAction<string>) => {
       state.errorMessage = action.payload;
     },
@@ -52,6 +62,8 @@ export const {
   setIsDeadline,
   setTasks,
   updateCheckedTask,
+  setMessage,
+  setIsShowMessage,
   setErrorMessage,
 } = taskSlice.actions;
 export const taskSliceReducer = taskSlice.reducer;

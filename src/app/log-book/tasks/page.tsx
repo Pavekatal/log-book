@@ -3,16 +3,22 @@
 import Button from '@/src/components/added-btn/AddedBtn';
 
 import AddTaskForm from '@/src/components/popups/add-task-form/AddTaskForm';
+import MessageForm from '@/src/components/popups/message-form/MessageForm';
 import ScrollContainer from '@/src/components/scroll-container/ScrollContainer';
 import TaskCard from '@/src/components/task-card/TaskCard';
 import { GroupeTasks, TaskType } from '@/src/shared-types/sharedTypes';
-import { setOpenAddFormTask } from '@/src/store/features/taskSlice';
+import {
+  setIsShowMessage,
+  setOpenAddFormTask,
+} from '@/src/store/features/taskSlice';
 import { useAppDispatch, useAppSelector } from '@/src/store/store';
 import { groupTasksByDate } from '@/src/utils/groupingByCreationDate';
 
 export default function TasksPage() {
   const dispatch = useAppDispatch();
-  const { openAddFormTask, tasks } = useAppSelector((state) => state.tasks);
+  const { openAddFormTask, tasks, message, isShowMessage } = useAppSelector(
+    (state) => state.tasks,
+  );
 
   const groups: GroupeTasks = groupTasksByDate(tasks);
 
@@ -24,6 +30,10 @@ export default function TasksPage() {
   const onOverlayClick = () => {
     if (openAddFormTask) {
       dispatch(setOpenAddFormTask(false));
+    }
+
+    if (isShowMessage) {
+      dispatch(setIsShowMessage(false));
     }
   };
 
@@ -54,6 +64,9 @@ export default function TasksPage() {
           ))}
       </ScrollContainer>
       <div onClick={onOverlayClick}>{openAddFormTask && <AddTaskForm />}</div>
+      <div onClick={onOverlayClick}>
+        {isShowMessage && <MessageForm message={message} />}
+      </div>
     </div>
   );
 }

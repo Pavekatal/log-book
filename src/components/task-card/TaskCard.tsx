@@ -7,14 +7,16 @@ import { formattedDate } from '@/src/utils/formattedDate';
 import Billet from '../billet/Billet';
 import React, { useState } from 'react';
 import Input from '../input/Input';
-import { useAppDispatch } from '@/src/store/store';
+import { useAppDispatch, useAppSelector } from '@/src/store/store';
 import {
   setIsDeadline,
+  setIsShowMessage,
+  setMessage,
   setTasks,
   updateCheckedTask,
 } from '@/src/store/features/taskSlice';
 import DatePickerSmall from '../date-picker/DatePickerSmall';
-import { getTasks, patchTask } from '@/src/services/tasks/tasksAPI';
+import { deleteTask, getTasks, patchTask } from '@/src/services/tasks/tasksAPI';
 
 interface TaskProp {
   task: TaskType;
@@ -29,7 +31,6 @@ export default function TaskCard({ task }: TaskProp) {
   const onIsEditTask = () => {
     setIsEdit(!isEdit);
     dispatch(setIsDeadline(true));
-    console.log(task._id);
   };
 
   const onCheckedTask = (id: string, isChecked: boolean) => {
@@ -38,8 +39,6 @@ export default function TaskCard({ task }: TaskProp) {
       ...prev,
       checked: isChecked,
     }));
-    console.log('isChecked: ', isChecked);
-    console.log('id: ', id);
   };
 
   const onChangeProgressTask = (
@@ -53,7 +52,6 @@ export default function TaskCard({ task }: TaskProp) {
     if (date) {
       let ISODate = date.toISOString();
       setDataField((prev) => ({ ...prev, deadline: ISODate }));
-      console.log('ISODate: ', ISODate);
     }
   };
 
@@ -71,6 +69,8 @@ export default function TaskCard({ task }: TaskProp) {
 
     if (Object.keys(patchPartialTask).length === 0) {
       console.log('Нет изменений для сохранения');
+      dispatch(setIsShowMessage(true));
+      dispatch(setMessage('Нет изменений для сохранения'));
       setIsEdit(false);
       return;
     }
@@ -79,13 +79,16 @@ export default function TaskCard({ task }: TaskProp) {
       await patchTask(task._id, patchPartialTask);
       const updatedTask = await getTasks();
       dispatch(setTasks(updatedTask));
-      console.log('DataField: ', dataField);
       console.log('Задача сохранена успешно');
       setIsEdit(false);
     } catch (err: unknown) {
       if (err instanceof Error) {
         console.log(err.message);
+        dispatch(setIsShowMessage(true));
+        dispatch(setMessage(err.message));
       } else {
+        dispatch(setIsShowMessage(true));
+        dispatch(setMessage('Произошла ошибка отправки данных'));
         console.log('Произошла ошибка отправки данных', err);
       }
     }
@@ -93,13 +96,39 @@ export default function TaskCard({ task }: TaskProp) {
 
   const onCancelSave = () => {
     setIsEdit(false);
+    dispatch(setIsShowMessage(true));
+    dispatch(setMessage('Редактирование задачи отменено'));
     console.log('Редактирование задачи отменено');
     return;
   };
 
-  const onDeleteTask = () => {
-    console.log('deleted task');
-    console.log('Задача удалена успешно');
+  const onDeleteTask = async () => {
+    const consentDelete = confirm('Точно хотите удалить задачу?');
+
+    if (!consentDelete) {
+      dispatch(setIsShowMessage(true));
+      dispatch(setMessage('Удаление задачи отменено'));
+      return;
+    }
+
+    try {
+      await deleteTask(task._id);
+      const updatedTask = await getTasks();
+      dispatch(setTasks(updatedTask));
+      dispatch(setIsShowMessage(true));
+      dispatch(setMessage('Задача удалена успешно'));
+      console.log('Задача удалена успешно');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        dispatch(setIsShowMessage(true));
+        dispatch(setMessage(err.message));
+        console.log(err.message);
+      } else {
+        dispatch(setIsShowMessage(true));
+        dispatch(setMessage('Произошла ошибка отправки данных'));
+        console.log('Произошла ошибка отправки данных', err);
+      }
+    }
   };
 
   return (
