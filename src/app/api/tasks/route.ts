@@ -1,6 +1,8 @@
 import { getDb } from '../../../../lib/db';
 import { TaskInput, TaskType } from '@/src/shared-types/sharedTypes';
 import { NextResponse } from 'next/server';
+import { extractUserIdFromRequest } from '../days/route';
+import { error } from 'console';
 
 export async function GET(): Promise<Response> {
   const db = await getDb();
@@ -11,22 +13,31 @@ export async function GET(): Promise<Response> {
 }
 
 export async function POST(request: Request): Promise<Response> {
-  const body = (await request.json()) as TaskInput;
+  // 1) проверяем авторизацию
+  const userIdFromAuth = extractUserIdFromRequest(request);
+  const body = (await request.json()) as TaskType;
+  const userIdFinal = userIdFromAuth ?? body.userId ?? 'demo';
 
-  if (!body?.title || !body.typeTask) {
+  if (!userIdFinal) {
+    return NextResponse.json({ error: 'No authentication' }, { status: 401 });
+  }
+
+  // 2) проверяем обязательные поля, включая daiId
+  if (!body?.title || !body.typeTask || !body.dayId) {
     return NextResponse.json(
-      { error: 'title and typeTask are required' },
+      { error: 'title, typeTask and dayId are required' },
       { status: 400 },
     );
   }
+
   try {
-    const id =
-      body._id ?? Date.now().toString() + Math.random().toString(16).slice(2);
+    const id = body._id ?? crypto.randomUUID();
     const now = new Date().toISOString();
     const db = await getDb();
 
+    // 3) Сохранеям задачу с привязкой в dayId и userId
     await db.run(
-      `INSERT INTO tasks (_id, title, createDate, updateDate, deadline, progress, checked, typeTask) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO tasks (_id, title, createDate, updateDate, deadline, progress, checked, typeTask, dayId, userId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         id,
         body.title,
@@ -36,6 +47,8 @@ export async function POST(request: Request): Promise<Response> {
         body.progress ?? '',
         typeof body.checked === 'boolean' ? (body.checked ? 1 : 0) : 0,
         body.typeTask,
+        body.dayId, // привязка к текущему дню
+        userIdFinal, // привязка к пользователю
       ],
     );
 

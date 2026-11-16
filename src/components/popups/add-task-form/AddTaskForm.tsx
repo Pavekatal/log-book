@@ -18,7 +18,9 @@ import { getTasks, postTask } from '@/src/services/tasks/tasksAPI';
 
 export default function AddTaskForm() {
   const dispatch = useAppDispatch();
-  const { isDeadline, errorMessage } = useAppSelector((state) => state.tasks);
+  const { isDeadline, errorMessage, currentUser } = useAppSelector(
+    (state) => state.tasks,
+  );
   const [error, setError] = useState<boolean>(false);
   const [currentTypeTask, setCurrentTypeTask] = useState<boolean | null>(null);
   const [dataField, setDataField] = useState<TaskForPost>({
@@ -28,6 +30,8 @@ export default function AddTaskForm() {
     progress: '',
     checked: false,
     typeTask: '',
+    userId: '',
+    dayId: '',
   });
 
   useEffect(() => {
@@ -110,6 +114,8 @@ export default function AddTaskForm() {
     const dataToSend = {
       ...dataField,
       createDate: new Date().toISOString(),
+      userId: currentUser,
+      dayId: new Date().toISOString(),
     };
     console.log('dataToSend: ', dataToSend);
 
@@ -239,7 +245,7 @@ export default function AddTaskForm() {
           </div>
         </div>
         <div className="flex items-end justify-center">
-          <Button onClick={onAddedTask} className="btn-add w-22 h-7.75 ">
+          <Button onClick={onAddedTask} className="btn-add w-26 h-7.75 ">
             Добавить
           </Button>
         </div>

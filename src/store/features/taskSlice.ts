@@ -1,4 +1,4 @@
-import { TaskType } from '@/src/shared-types/sharedTypes';
+import { TaskType, UserType } from '@/src/shared-types/sharedTypes';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 type initialStateType = {
@@ -8,6 +8,8 @@ type initialStateType = {
   message: string;
   isShowMessage: boolean;
   errorMessage: string;
+  activeDay: string;
+  currentUser: string;
 };
 
 const initialState: initialStateType = {
@@ -17,6 +19,8 @@ const initialState: initialStateType = {
   message: '',
   isShowMessage: false,
   errorMessage: '',
+  activeDay: '',
+  currentUser: 'demo-user',
 };
 
 const taskSlice = createSlice({
@@ -54,6 +58,12 @@ const taskSlice = createSlice({
     setErrorMessage: (state, action: PayloadAction<string>) => {
       state.errorMessage = action.payload;
     },
+    setActiveDay: (state, action: PayloadAction<string>) => {
+      state.activeDay = action.payload;
+    },
+    setCurrentUser: (state, action: PayloadAction<string>) => {
+      state.currentUser = action.payload;
+    },
   },
 });
 
@@ -65,5 +75,7 @@ export const {
   setMessage,
   setIsShowMessage,
   setErrorMessage,
+  setActiveDay,
+  setCurrentUser,
 } = taskSlice.actions;
 export const taskSliceReducer = taskSlice.reducer;
