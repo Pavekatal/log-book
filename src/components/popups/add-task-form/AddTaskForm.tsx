@@ -8,6 +8,7 @@ import TextArea from '../../text-area/TextArea';
 import DatePicker from '../../date-picker/DatePicker';
 import { useAppDispatch, useAppSelector } from '@/src/store/store';
 import {
+  setDays,
   setErrorMessage,
   setIsDeadline,
   setOpenAddFormTask,
@@ -15,10 +16,11 @@ import {
 } from '@/src/store/features/taskSlice';
 import { TaskForPost, TaskType } from '@/src/shared-types/sharedTypes';
 import { getTasks, postTask } from '@/src/services/tasks/tasksAPI';
+import { getDays } from '@/src/services/days/daysAPI';
 
 export default function AddTaskForm() {
   const dispatch = useAppDispatch();
-  const { isDeadline, errorMessage, currentUser } = useAppSelector(
+  const { today, days, isDeadline, errorMessage, currentUser } = useAppSelector(
     (state) => state.tasks,
   );
   const [error, setError] = useState<boolean>(false);
@@ -99,6 +101,9 @@ export default function AddTaskForm() {
     console.log('dataField:', dataField);
   };
 
+  const getToday = days[0]._idDay;
+  console.log('getToday: ', getToday);
+
   const onAddedTask = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
@@ -115,7 +120,7 @@ export default function AddTaskForm() {
       ...dataField,
       createDate: new Date().toISOString(),
       userId: currentUser,
-      dayId: new Date().toISOString(),
+      dayId: getToday,
     };
     console.log('dataToSend: ', dataToSend);
 
@@ -124,6 +129,8 @@ export default function AddTaskForm() {
         await postTask(dataToSend);
         const updateTasks = await getTasks();
         dispatch(setTasks(updateTasks));
+        const updateDay = await getDays();
+        dispatch(setDays(updateDay));
         dispatch(setOpenAddFormTask(false));
         console.log('dataField: ', dataToSend);
       }

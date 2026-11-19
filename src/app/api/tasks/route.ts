@@ -52,7 +52,20 @@ export async function POST(request: Request): Promise<Response> {
       ],
     );
 
-    return NextResponse.json({ id });
+    const newTask: TaskType = {
+      _id: id,
+      title: body.title,
+      createDate: body.createDate ?? now,
+      updateDate: body.updateDate ?? undefined,
+      deadline: body.deadline ?? null,
+      progress: body.progress ?? '',
+      checked: Boolean(body.checked),
+      typeTask: body.typeTask,
+      dayId: body.dayId,
+      userId: userIdFinal,
+    };
+
+    return NextResponse.json(newTask);
   } catch (error: unknown) {
     const message =
       error instanceof Error ? error.message : 'Unknown Server Error';

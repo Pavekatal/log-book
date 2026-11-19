@@ -13,7 +13,7 @@ export interface TaskType {
 
 export interface DaysType {
   _idDay: string;
-  currentDate: string;
+  currentDay: string;
   daily: TaskType[];
   current: TaskType[];
 }
@@ -47,12 +47,16 @@ export interface TaskForPatch {
 }
 
 export type GroupeTasks = {
-  [date: string]: TaskType[];
+  [date: string]: DaysType[];
 };
 
 export type ResponseTask = {
   id: string;
 };
+
+export interface DayForPost {
+  userId?: string;
+}
 
 export interface UserType {
   _id: string;
