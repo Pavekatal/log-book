@@ -37,6 +37,31 @@ export async function PATCH(
     const body = await request.json();
     const db = await getDb();
 
+    // запрещаем редактировать задачу из "старых" дней
+    // проверяем, к какому дню и к какому пользователю относится задача
+    const tasksInfo = await db.get<{ dayId: string; userId: string }>(
+      'SELECT dayId, userId FROM tasks WHERE _id = ?',
+      [id],
+    );
+
+    if (!tasksInfo) {
+      return NextResponse.json({ error: 'Task not found' }, { status: 404 });
+    }
+
+    // находим последний созданный день этого пользователя
+    const latestDay = await db.get<{ _idDay: string }>(
+      'SELECT _idDay FROM days WHERE userId = ? ORDER BY currentDay DESC LIMIT 1',
+      [tasksInfo.userId],
+    );
+
+    // блокируем изменения, если задача не из последнего дня
+    if (!latestDay || tasksInfo.dayId !== latestDay._idDay) {
+      return NextResponse.json(
+        { error: 'Задачи из прошлых дней нельзя редактировать' },
+        { status: 403 },
+      );
+    }
+
     // Собираем только те поля, которые пришли в запросе
     const updates: string[] = [];
     const values: (string | number | null)[] = [];
@@ -54,8 +79,8 @@ export async function PATCH(
       if (body[key] !== undefined) {
         updates.push(`${key} = ?`);
 
-        if (key === 'checked' && typeof body[key] === 'boolean') {
-          values.push(body[key] ? 1 : 0);
+        if (key === 'checked') {
+          values.push(Boolean(body[key]) ? 1 : 0);
         } else {
           values.push(body[key]);
         }
@@ -85,7 +110,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Task not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ succes: true });
+    return NextResponse.json({ success: true });
   } catch (error: unknown) {
     const message =
       error instanceof Error ? error.message : 'Unknown Server Error';

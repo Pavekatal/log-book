@@ -5,13 +5,17 @@ import {
   TaskType,
 } from '@/src/shared-types/sharedTypes';
 import axios, { AxiosResponse } from 'axios';
-
-const API_URL = 'http://localhost:3000';
+import { API_URL } from '../constants';
 
 export const getTasks = async (): Promise<TaskType[]> => {
-  return await axios(API_URL + '/api/tasks').then((res) => {
-    return res.data;
-  });
+  return await axios(API_URL + '/api/tasks')
+    .then((res) => {
+      return res.data;
+    })
+    .catch((error) => {
+      console.error(error);
+      throw error;
+    });
 };
 
 export const postTask = async (data: TaskForPost): Promise<ResponseTask> => {

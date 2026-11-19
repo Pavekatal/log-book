@@ -27,7 +27,7 @@ export default function MessageForm({ message }: MessageFormType) {
           onClick={onCloseMessageForm}
           className="w-28 h-auto py-2 shadow-[0px_4px_67px_-12px_rgba(0,0,0,1)] hover:scale-105 cursor-pointer  "
         >
-          Понятно
+          Хорошо
         </Button>
       </div>
     </div>

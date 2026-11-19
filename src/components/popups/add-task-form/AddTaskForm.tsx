@@ -8,6 +8,7 @@ import TextArea from '../../text-area/TextArea';
 import DatePicker from '../../date-picker/DatePicker';
 import { useAppDispatch, useAppSelector } from '@/src/store/store';
 import {
+  setDays,
   setErrorMessage,
   setIsDeadline,
   setOpenAddFormTask,
@@ -15,10 +16,13 @@ import {
 } from '@/src/store/features/taskSlice';
 import { TaskForPost, TaskType } from '@/src/shared-types/sharedTypes';
 import { getTasks, postTask } from '@/src/services/tasks/tasksAPI';
+import { getDays } from '@/src/services/days/daysAPI';
 
 export default function AddTaskForm() {
   const dispatch = useAppDispatch();
-  const { isDeadline, errorMessage } = useAppSelector((state) => state.tasks);
+  const { today, days, isDeadline, errorMessage, currentUser } = useAppSelector(
+    (state) => state.tasks,
+  );
   const [error, setError] = useState<boolean>(false);
   const [currentTypeTask, setCurrentTypeTask] = useState<boolean | null>(null);
   const [dataField, setDataField] = useState<TaskForPost>({
@@ -28,6 +32,8 @@ export default function AddTaskForm() {
     progress: '',
     checked: false,
     typeTask: '',
+    userId: '',
+    dayId: '',
   });
 
   useEffect(() => {
@@ -95,6 +101,9 @@ export default function AddTaskForm() {
     console.log('dataField:', dataField);
   };
 
+  const getToday = days[0]._idDay;
+  console.log('getToday: ', getToday);
+
   const onAddedTask = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
@@ -110,6 +119,8 @@ export default function AddTaskForm() {
     const dataToSend = {
       ...dataField,
       createDate: new Date().toISOString(),
+      userId: currentUser,
+      dayId: getToday,
     };
     console.log('dataToSend: ', dataToSend);
 
@@ -118,6 +129,8 @@ export default function AddTaskForm() {
         await postTask(dataToSend);
         const updateTasks = await getTasks();
         dispatch(setTasks(updateTasks));
+        const updateDay = await getDays();
+        dispatch(setDays(updateDay));
         dispatch(setOpenAddFormTask(false));
         console.log('dataField: ', dataToSend);
       }
@@ -239,7 +252,7 @@ export default function AddTaskForm() {
           </div>
         </div>
         <div className="flex items-end justify-center">
-          <Button onClick={onAddedTask} className="btn-add w-22 h-7.75 ">
+          <Button onClick={onAddedTask} className="btn-add w-26 h-7.75 ">
             Добавить
           </Button>
         </div>

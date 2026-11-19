@@ -9,6 +9,7 @@ import React, { useState } from 'react';
 import Input from '../input/Input';
 import { useAppDispatch, useAppSelector } from '@/src/store/store';
 import {
+  setDays,
   setIsDeadline,
   setIsShowMessage,
   setMessage,
@@ -17,6 +18,8 @@ import {
 } from '@/src/store/features/taskSlice';
 import DatePickerSmall from '../date-picker/DatePickerSmall';
 import { deleteTask, getTasks, patchTask } from '@/src/services/tasks/tasksAPI';
+import { getDays } from '@/src/services/days/daysAPI';
+import axios from 'axios';
 
 interface TaskProp {
   task: TaskType;
@@ -39,6 +42,7 @@ export default function TaskCard({ task }: TaskProp) {
       ...prev,
       checked: isChecked,
     }));
+    console.log('id & isChecked: ', id, isChecked);
   };
 
   const onChangeProgressTask = (
@@ -79,18 +83,23 @@ export default function TaskCard({ task }: TaskProp) {
       await patchTask(task._id, patchPartialTask);
       const updatedTask = await getTasks();
       dispatch(setTasks(updatedTask));
+      const updateDay = await getDays();
+      dispatch(setDays(updateDay));
       console.log('Задача сохранена успешно');
       setIsEdit(false);
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        console.log(err.message);
-        dispatch(setIsShowMessage(true));
-        dispatch(setMessage(err.message));
-      } else {
-        dispatch(setIsShowMessage(true));
-        dispatch(setMessage('Произошла ошибка отправки данных'));
-        console.log('Произошла ошибка отправки данных', err);
-      }
+      dispatch(setIsShowMessage(true));
+      const serverErrorMessage = axios.isAxiosError(err)
+        ? err.response?.data.error
+        : undefined;
+      const finalErrorMessage =
+        serverErrorMessage ||
+        (err instanceof Error
+          ? err.message
+          : 'Произошла ошибка отправки данных');
+      dispatch(setMessage(finalErrorMessage));
+      console.log('Произошла ошибка отправки данных', err);
+      setIsEdit(false);
     }
   };
 
@@ -115,6 +124,8 @@ export default function TaskCard({ task }: TaskProp) {
       await deleteTask(task._id);
       const updatedTask = await getTasks();
       dispatch(setTasks(updatedTask));
+      const updateDay = await getDays();
+      dispatch(setDays(updateDay));
       dispatch(setIsShowMessage(true));
       dispatch(setMessage('Задача удалена успешно'));
       console.log('Задача удалена успешно');
@@ -151,11 +162,11 @@ export default function TaskCard({ task }: TaskProp) {
                 >
                   <path
                     d="M15 22.75H9C3.57 22.75 1.25 20.43 1.25 15V9C1.25 3.57 3.57 1.25 9 1.25H15C20.43 1.25 22.75 3.57 22.75 9V15C22.75 20.43 20.43 22.75 15 22.75ZM9 2.75C4.39 2.75 2.75 4.39 2.75 9V15C2.75 19.61 4.39 21.25 9 21.25H15C19.61 21.25 21.25 19.61 21.25 15V9C21.25 4.39 19.61 2.75 15 2.75H9Z"
-                    fill="#c560e4"
+                    fill="#67E6DC"
                   />
                   <path
                     d="M11.9999 14.9101C11.8099 14.9101 11.6199 14.8401 11.4699 14.6901L7.93991 11.1601C7.64991 10.8701 7.64991 10.3901 7.93991 10.1001C8.22991 9.81007 8.70991 9.81007 8.99991 10.1001L11.9999 13.1001L14.9999 10.1001C15.2899 9.81007 15.7699 9.81007 16.0599 10.1001C16.3499 10.3901 16.3499 10.8701 16.0599 11.1601L12.5299 14.6901C12.3799 14.8401 12.1899 14.9101 11.9999 14.9101Z"
-                    fill="#c560e4"
+                    fill="#67E6DC"
                   />
                 </svg>
               ) : (
@@ -168,11 +179,11 @@ export default function TaskCard({ task }: TaskProp) {
                 >
                   <path
                     d="M15 22.75H9C3.57 22.75 1.25 20.43 1.25 15V9C1.25 3.57 3.57 1.25 9 1.25H15C20.43 1.25 22.75 3.57 22.75 9V15C22.75 20.43 20.43 22.75 15 22.75ZM9 2.75C4.39 2.75 2.75 4.39 2.75 9V15C2.75 19.61 4.39 21.25 9 21.25H15C19.61 21.25 21.25 19.61 21.25 15V9C21.25 4.39 19.61 2.75 15 2.75H9Z"
-                    fill="#67E6DC"
+                    fill="#cdaef7"
                   />
                   <path
                     d="M17.5 12C17.5 15.04 15.04 17.5 12 17.5C8.96 17.5 7.10999 14.44 7.10999 14.44M7.10999 17.19V14.44H9.59M6.5 12C6.5 8.96 8.94 6.5 12 6.5C15.67 6.5 17.5 9.56 17.5 9.56M15.06 9.56H17.5V6.81"
-                    stroke="#67E6DC"
+                    stroke="#cdaef7"
                     strokeWidth="1.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -230,6 +241,7 @@ export default function TaskCard({ task }: TaskProp) {
               <p className="font-light text-sm">до: </p>
               <p className="font-bold text-sm">
                 {formattedDate(task.deadline)}
+                {/* {task.deadline} */}
               </p>
             </div>
           ) : null}
